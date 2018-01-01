@@ -64,7 +64,7 @@ static const uint32_t divisors[5] = { 2, 8, 32, 128, 0};
 #endif
 
 /** Current wave configuration*/
-static uint8_t gs_uc_configuration = 0;
+static uint8_t gs_uc_configuration = 1;
 
 /** Number of available wave configurations */
 const uint8_t gc_uc_nbconfig = sizeof(gc_waveconfig)
@@ -75,6 +75,7 @@ static uint32_t gs_ul_captured_pulses;
 static uint32_t gs_ul_captured_ra;
 static uint32_t gs_ul_captured_rb;
 
+void ast_per_callback(void);
 
 
 static void tc_waveform_initialize(void)
@@ -123,26 +124,9 @@ static void tc_capture_initialize(void)
 	| TC_CMR_ETRGEDG_FALLING /* External Trigger Edge: Falling edge */
 	);
 }
-void TC_Handler(void)
+
+static void time_counter_init(void)
 {
-	if ((tc_get_status(TC, TC_CHANNEL_CAPTURE) & TC_SR_LDRBS) == TC_SR_LDRBS) {
-		gs_ul_captured_pulses++;
-		gs_ul_captured_ra = tc_read_ra(TC, TC_CHANNEL_CAPTURE);
-		gs_ul_captured_rb = tc_read_rb(TC, TC_CHANNEL_CAPTURE);
-	}
-}
-
-int main (void)
-{
-	sysclk_init();
-	board_init();
-	uart_init();
-
-	/* Output example information */
-	printf("-- TC capture waveform Example --\r\n");
-	printf("-- %s\n\r", BOARD_NAME);
-	printf("-- Compiled: %s %s --\n\r", __DATE__, __TIME__);
-
 	//! [tc_waveform_gpio]
 	/** Configure PIO Pins for TC */
 	ioport_set_pin_mode(PIN_TC_WAVEFORM, PIN_TC_WAVEFORM_MUX);
@@ -188,10 +172,53 @@ int main (void)
 	/* Start the timer counter on TC TC_CHANNEL_CAPTURE */
 	//! [tc_capture_start_now]
 	tc_start(TC, TC_CHANNEL_CAPTURE);
-	
+}
+
+static void ast_init(void)
+{
+	osc_priv_enable_osc32(); 
+	ast_enable(AST);
+
+	struct ast_config ast_conf;
+	ast_conf.mode = AST_COUNTER_MODE;
+	ast_conf.osc_type = AST_OSC_32KHZ;
+	ast_conf.psel = AST_PSEL_32KHZ_1HZ;
+	ast_conf.counter = 0;
+	ast_set_config(AST, &ast_conf);
+	ast_write_periodic0_value(AST, AST_PSEL_32KHZ_1HZ - 4);
+	ast_set_callback(AST, AST_INTERRUPT_PER, ast_per_callback, AST_PER_IRQn, 1);
+}
+
+void ast_per_callback(void)
+{
+	ast_clear_interrupt_flag(AST, AST_INTERRUPT_PER);
+}
+
+void TC_Handler(void)
+{
+	if ((tc_get_status(TC, TC_CHANNEL_CAPTURE) & TC_SR_LDRBS) == TC_SR_LDRBS) {
+		gs_ul_captured_pulses++;
+		gs_ul_captured_ra = tc_read_ra(TC, TC_CHANNEL_CAPTURE);
+		gs_ul_captured_rb = tc_read_rb(TC, TC_CHANNEL_CAPTURE);
+	}
+}
+
+int main (void)
+{
+	sysclk_init();
+	board_init();
+	uart_init();
+	time_counter_init();
+	ast_init();
+
+	/* Output example information */
+	printf("-- Simple Scheduler --\r\n");
+	printf("-- %s\n\r", BOARD_NAME);
+	printf("-- Compiled: %s %s --\n\r", __DATE__, __TIME__);
+
 	/* This skeleton code simply sets the LED to the state of the button. */
-	while (1) {
-	
+	while (1)
+	{
 		//! [tc_capture_init_module_irq]
 
 		/* Is button pressed? */

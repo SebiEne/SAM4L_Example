@@ -1,5 +1,5 @@
 src/main.d src/main.o: ../src/main.c ../src/asf.h \
- ../src/ASF/sam/utils/compiler.h \
+ ../src/ASF/sam/drivers/ast/ast.h ../src/ASF/sam/utils/compiler.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\lib\gcc\arm-none-eabi\6.3.1\include\stddef.h \
  ../src/ASF/common/utils/parts.h \
  ../src/ASF/sam/utils/preprocessor/preprocessor.h \
@@ -149,6 +149,10 @@ src/main.d src/main.o: ../src/main.c ../src/asf.h \
  ../src/ASF/sam/drivers/bpm/bpm.h \
  ../src/ASF/sam/boards/sam4l_xplained_pro/led.h \
  ../src/ASF/sam/utils/cmsis/sam4l/source/templates/exceptions.h \
+ ../src/ASF/common/services/sleepmgr/sam4l/sleepmgr.h \
+ ../src/config/conf_sleepmgr.h \
+ ../src/ASF/common/services/sleepmgr/sleepmgr.h \
+ ../src/ASF/common/services/sleepmgr/sam4l/sleepmgr.h \
  ../src/ASF/common/utils/stdio/stdio_serial/stdio_serial.h \
  ../src/ASF/common/services/serial/serial.h \
  ../src/ASF/common/services/serial/sam_uart/uart_serial.h \
@@ -156,6 +160,8 @@ src/main.d src/main.o: ../src/main.c ../src/asf.h \
  ../src/ASF/sam/drivers/tc/tc.h ../src/ASF/sam/drivers/wdt/wdt_sam4l.h
 
 ../src/asf.h:
+
+../src/ASF/sam/drivers/ast/ast.h:
 
 ../src/ASF/sam/utils/compiler.h:
 
@@ -460,6 +466,14 @@ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-no
 ../src/ASF/sam/boards/sam4l_xplained_pro/led.h:
 
 ../src/ASF/sam/utils/cmsis/sam4l/source/templates/exceptions.h:
+
+../src/ASF/common/services/sleepmgr/sam4l/sleepmgr.h:
+
+../src/config/conf_sleepmgr.h:
+
+../src/ASF/common/services/sleepmgr/sleepmgr.h:
+
+../src/ASF/common/services/sleepmgr/sam4l/sleepmgr.h:
 
 ../src/ASF/common/utils/stdio/stdio_serial/stdio_serial.h:
 
